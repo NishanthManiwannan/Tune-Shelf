@@ -21,6 +21,7 @@ export interface Track {
   url: string;
   duration: string;
   artist: BaseArtist;
+  playcount?: string;
 }
 
 export interface TopAlbum extends BaseAlbum {
@@ -51,6 +52,7 @@ export interface AlbumDetail extends BaseAlbum {
   releasedate?: string;
 }
 
+export type TopTrackResponse = Pick<AlbumDetail, "tracks">
 export interface GetAlbumInfoResponse {
   album: AlbumDetail;
 }

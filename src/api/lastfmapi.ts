@@ -4,6 +4,8 @@ import type {
   GetAlbumInfoResponse,
   GetTopAlbumsResponse,
   TopAlbum,
+  TopTrackResponse,
+  Track,
 } from "../types/lastfm";
 
 const API_KEY = import.meta.env.VITE_REACT_APP_LASTFM_API_KEY;
@@ -41,4 +43,13 @@ export const getAlbumInfo = async (
     },
   });
   return response.data.album;
+};
+
+export const getTopTracks = async (): Promise<Track[]> => {
+  const response = await apiClient.get<TopTrackResponse>("/", {
+    params: {
+      method: "chart.gettoptracks",
+    },
+  });
+  return response.data.tracks.track;
 };
