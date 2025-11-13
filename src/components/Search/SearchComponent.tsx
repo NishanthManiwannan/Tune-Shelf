@@ -14,7 +14,6 @@ import type { SearchComponentProps } from '../../types/lastfm';
 
 const SearchComponent: React.FC<SearchComponentProps> = ({ setAlbums, artistName }) => {
     const [query, setQuery] = useState('');
-    const [searchType] = useState<'artist' | 'track'>('artist');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +52,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ setAlbums, artistName
         <VStack gap={4} align="stretch" w="100%">
             <HStack gap={3}>
                 <Input
-                    placeholder={`Search for a ${searchType} name...`}
+                    placeholder={`Search for a artist name...`}
                     value={query}
                     onChange={handleInputChange}
                     flex="3"

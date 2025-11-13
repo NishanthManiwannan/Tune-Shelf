@@ -9,16 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { useAlbumStore } from '../../store/albumStore';
 import { useNavigate } from 'react-router-dom';
-
-const formatDuration = (secondsStr: string): string => {
-    const totalSeconds = parseInt(secondsStr, 10);
-    if (isNaN(totalSeconds) || totalSeconds === 0) return "0:00";
-
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
+import { formatDuration } from '../../utils';
 
 const FavouritesPage: React.FC = () => {
     const { favourites, removeFavourite } = useAlbumStore();

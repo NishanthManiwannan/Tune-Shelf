@@ -2,8 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { SimpleGrid, Box, Image, Text, Spinner, Alert, VStack, AlertTitle, HStack, Button } from '@chakra-ui/react';
 import { getTopAlbums } from '../../api/lastfmapi';
 import { useNavigate } from 'react-router-dom';
-import type { AlbumOverviewProps, LastFmImage } from '../../types/lastfm';
+import type { AlbumOverviewProps } from '../../types/lastfm';
 import BestPlayedGraph from '../Graph/BestPlayedGraph';
+import { getImageUrl } from '../../utils';
 
 type SortKey = "name" | "playcount";
 
@@ -15,11 +16,6 @@ const AlbumOverview: React.FC<AlbumOverviewProps> = ({ albums, artistName, setAl
 
     const [sortBy, setSortBy] = useState<SortKey>("name");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-    const getImageUrl = (images: LastFmImage[],) => {
-        const img = images.find(i => i.size === 'large');
-        return img ? img['#text'] : '';
-    };
 
     useEffect(() => {
         const loadAlbums = async () => {
