@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { SimpleGrid, Box, Image, Text, Spinner, Alert, VStack, AlertTitle} from '@chakra-ui/react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { SimpleGrid, Box, Image, Text, Spinner, Alert, VStack, AlertTitle, HStack, Button } from '@chakra-ui/react';
 import { getTopAlbums } from '../../api/lastfmapi';
 import { useNavigate } from 'react-router-dom';
 import type { AlbumOverviewProps, LastFmImage } from '../../types/lastfm';
+import BestPlayedGraph from '../Graph/BestPlayedGraph';
+
+type SortKey = "name" | "playcount";
 
 const AlbumOverview: React.FC<AlbumOverviewProps> = ({ albums, artistName, setAlbums }) => {
 
@@ -10,8 +13,11 @@ const AlbumOverview: React.FC<AlbumOverviewProps> = ({ albums, artistName, setAl
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const getImageUrl = (images: LastFmImage[], size: string = 'large') => {
-        const img = images.find(i => i.size === size);
+    const [sortBy, setSortBy] = useState<SortKey>("name");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+    const getImageUrl = (images: LastFmImage[],) => {
+        const img = images.find(i => i.size === 'large');
         return img ? img['#text'] : '';
     };
 
@@ -43,6 +49,52 @@ const AlbumOverview: React.FC<AlbumOverviewProps> = ({ albums, artistName, setAl
         navigate(`/album/${encodedArtist}/${encodedAlbum}`);
     };
 
+    const sortedAlbums = useMemo(() => {
+        if (albums.length === 0) return [];
+
+        const sortableAlbums = [...albums];
+
+        sortableAlbums.sort((a, b) => {
+            let comparison = 0;
+
+            if (sortBy === "name") {
+                const nameA = a.name.toUpperCase();
+                const nameB = b.name.toUpperCase();
+
+                if (nameA > nameB) comparison = 1;
+                else if (nameA < nameB) comparison = -1;
+            } else if (sortBy === "playcount") {
+                const countA = parseInt(a.playcount || "0", 10);
+                const countB = parseInt(b.playcount || "0", 10);
+                comparison = countA - countB;
+            }
+
+            return sortDirection === "asc" ? comparison : comparison * -1;
+        });
+
+        return sortableAlbums;
+    }, [albums, sortBy, sortDirection]);
+
+    const getSortIcon = (key: SortKey) => {
+        if (sortBy !== key) return null;
+
+        if (key === "name") {
+            return sortDirection === "asc" ? '▼' : '▲';
+        } else if (key === "playcount") {
+            return sortDirection === "asc" ? '▼' : '▲';
+        }
+        return null;
+    };
+
+    const handleSortChange = (key: SortKey) => {
+        if (sortBy === key) {
+            setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+        } else {
+            setSortBy(key);
+            setSortDirection("asc");
+        }
+    };
+
     if (isLoading) {
         return <>
             <VStack gap={4}>
@@ -61,8 +113,26 @@ const AlbumOverview: React.FC<AlbumOverviewProps> = ({ albums, artistName, setAl
 
     return (
         <>
+            <BestPlayedGraph tracks={albums} chartType="bar" />
+
+            <HStack gap={4} mb={4} mt={8}>
+                <Text fontWeight="bold">Sort Albums By:</Text>
+                <Button
+                    onClick={() => handleSortChange("name")}
+                    variant={sortBy === "name" ? "solid" : "outline"}
+                >
+                    {getSortIcon("name")} Name
+                </Button>
+                <Button
+                    onClick={() => handleSortChange("playcount")}
+                    variant={sortBy === "playcount" ? "solid" : "outline"}
+                >
+                    {getSortIcon("playcount")} Play Count
+                </Button>
+            </HStack>
+
             <SimpleGrid columns={{ base: 2, md: 4, lg: 5 }} gap={6}>
-                {albums.map((album) => (
+                {sortedAlbums.map((album) => (
                     <Box
                         key={album.name + album.artist}
                         p={3}

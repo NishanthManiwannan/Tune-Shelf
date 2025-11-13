@@ -7,6 +7,7 @@ const MainScreen = React.lazy(() => import('./components/MainScreen'));
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import AlbumDetailWrapper from './components/AlbumDetailWrapper';
 import FavouritesPage from './components/AlbumFav/FavouritesPage';
+import TrackListGraph from './components/Graph/TrackListGraph';
 
 const LoadingFallback: React.FC = () => (
   <Center height="300px">
@@ -18,12 +19,15 @@ const LoadingFallback: React.FC = () => (
 );
 
 const NavBar: React.FC = () => (
-  <HStack gap={6} p={4} borderBottom="1px">
+  <HStack gap={4} p={4} borderBottom="1px">
     <RouterLink to="/">
       <Button variant="solid">Home</Button>
     </RouterLink>
     <RouterLink to="/favourites">
       <Button variant="ghost">Favourites</Button>
+    </RouterLink>
+    <RouterLink to="/most-played">
+      <Button variant="ghost">Most Played</Button>
     </RouterLink>
   </HStack>
 );
@@ -40,6 +44,7 @@ function App() {
               <Route path="/" element={<MainScreen />} />
               <Route path="/album/:artist/:album" element={<AlbumDetailWrapper />} />
               <Route path="/favourites" element={<FavouritesPage />} />
+              <Route path="/most-played" element={<TrackListGraph />} />
               <Route path="*" element={<Text>Page Not Found</Text>} />
             </Routes>
           </Suspense>
