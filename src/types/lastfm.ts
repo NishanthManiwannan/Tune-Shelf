@@ -54,3 +54,9 @@ export interface AlbumDetail extends BaseAlbum {
 export interface GetAlbumInfoResponse {
   album: AlbumDetail;
 }
+
+export interface AlbumOverviewProps {
+  albums: TopAlbum[];
+  artistName: string;
+  setAlbums: (albums: TopAlbum[]) => void;
+}
