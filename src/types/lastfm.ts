@@ -60,3 +60,8 @@ export interface AlbumOverviewProps {
   artistName: string;
   setAlbums: (albums: TopAlbum[]) => void;
 }
+
+export interface SearchComponentProps {
+  artistName: string;
+  setAlbums: (albums: TopAlbum[]) => void;
+}
