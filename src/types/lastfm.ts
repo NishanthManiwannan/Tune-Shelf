@@ -24,7 +24,7 @@ export interface Track {
 }
 
 export interface TopAlbum extends BaseAlbum {
-  artist: BaseArtist; 
+  artist: BaseArtist;
   playcount: string;
   mbid: string;
 }
@@ -64,4 +64,12 @@ export interface AlbumOverviewProps {
 export interface SearchComponentProps {
   artistName: string;
   setAlbums: (albums: TopAlbum[]) => void;
+}
+
+export interface FavouriteTrack {
+  id: string;
+  name: string;
+  artist: string;
+  duration: string;
+  album: string;
 }
