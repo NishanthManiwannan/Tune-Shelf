@@ -13,29 +13,15 @@ import {
     Button,
     AlertTitle
 } from '@chakra-ui/react';
-import type { AlbumDetail, FavouriteTrack, LastFmImage, Track } from '../../types/lastfm';
+import type { AlbumDetail, FavouriteTrack, Track } from '../../types/lastfm';
 import { getAlbumInfo } from '../../api/lastfmapi';
 import { useAlbumStore } from '../../store/albumStore';
+import { formatDuration, getImageUrl } from '../../utils';
 
 interface AlbumDetailViewProps {
     artistName: string;
     albumName: string;
 }
-
-const formatDuration = (secondsStr: string): string => {
-    const totalSeconds = parseInt(secondsStr, 10);
-    if (isNaN(totalSeconds) || totalSeconds === 0) return "0:00";
-
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
-
-const getLargeImageUrl = (images: LastFmImage[]) => {
-    const img = images.find(i => i.size === 'large');
-    return img ? img['#text'] : '';
-};
 
 const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ artistName, albumName }) => {
     const [album, setAlbum] = useState<AlbumDetail | null>(null);
@@ -108,7 +94,7 @@ const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ artistName, albumName
         <Box p={8}>
             <HStack gap={8} align="flex-start" mb={8}>
                 <Image
-                    src={getLargeImageUrl(album.image)}
+                    src={getImageUrl(album.image)}
                     alt={album.name}
                     boxSize="400px"
                     objectFit="cover"
