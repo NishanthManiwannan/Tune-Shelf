@@ -9,7 +9,6 @@ import { getImageUrl } from '../../utils';
 type SortKey = "name" | "playcount";
 
 const AlbumOverview: React.FC<AlbumOverviewProps> = ({ albums, artistName, setAlbums }) => {
-
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -90,6 +89,10 @@ const AlbumOverview: React.FC<AlbumOverviewProps> = ({ albums, artistName, setAl
             setSortDirection("asc");
         }
     };
+
+    if (!albums.length) {
+        return <Alert.Root status="info">Album details not found.</Alert.Root>;
+    }
 
     if (isLoading) {
         return <>

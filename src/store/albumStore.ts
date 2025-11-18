@@ -5,6 +5,10 @@ interface AlbumState {
   albums: TopAlbum[];
   artistName: string;
   setAlbums: (albums: TopAlbum[]) => void;
+
+  query: string;
+  setQuery: (query: string) => void;
+
   favourites: FavouriteTrack[];
   addFavourite: (track: FavouriteTrack) => void;
   removeFavourite: (trackId: string) => void;
@@ -15,6 +19,9 @@ export const useAlbumStore = create<AlbumState>((set, get) => ({
   albums: [],
   artistName: "Cher",
   setAlbums: (albums) => set({ albums }),
+
+  query: "",
+  setQuery: (query) => set({ query }),
 
   favourites: [],
 

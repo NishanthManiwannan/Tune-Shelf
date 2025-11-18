@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
     Input,
     Button,
@@ -11,14 +11,16 @@ import {
 import debounce from 'lodash.debounce';
 import { getTopAlbums } from '../../api/lastfmapi';
 import type { SearchComponentProps } from '../../types/lastfm';
+import { useAlbumStore } from '../../store/albumStore';
 
 const SearchComponent: React.FC<SearchComponentProps> = ({ setAlbums, artistName }) => {
-    const [query, setQuery] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { query, setQuery } = useAlbumStore()
 
-    const debouncedSearch = useCallback(
-        debounce(async (searchValue: string) => {
+    const fetchResults = useCallback(async (searchValue: string) => {
+        try {
+
             if (searchValue.length < 3) {
                 const topAlbums = await getTopAlbums(artistName);
                 setAlbums(topAlbums);
@@ -26,21 +28,30 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ setAlbums, artistName
             }
             setIsLoading(true);
             setError(null);
-            try {
-                const data = await getTopAlbums(searchValue);
-                setAlbums(data);
-            } catch (err: unknown) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError('Error fetching search results.');
-                }
-                setAlbums([]);
-            } finally {
-                setIsLoading(false);
+            const data = await getTopAlbums(searchValue);
+            setAlbums(data);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Error fetching search results.');
             }
-        }, 500),
-        [artistName, setAlbums]);
+            setAlbums([]);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [artistName, setAlbums]);
+
+    const debouncedSearch = useMemo(
+        () => debounce(fetchResults, 500),
+        [fetchResults]
+    );
+
+    useEffect(() => {
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [debouncedSearch]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newQuery = event.target.value;

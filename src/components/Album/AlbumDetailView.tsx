@@ -8,15 +8,13 @@ import {
     VStack,
     Heading,
     HStack,
-    Table,
     Tag,
-    Button,
     AlertTitle
 } from '@chakra-ui/react';
-import type { AlbumDetail, FavouriteTrack, Track } from '../../types/lastfm';
+import type { AlbumDetail, Track } from '../../types/lastfm';
 import { getAlbumInfo } from '../../api/lastfmapi';
-import { useAlbumStore } from '../../store/albumStore';
-import { formatDuration, getImageUrl } from '../../utils';
+import { getImageUrl } from '../../utils';
+import Table from '../../pages/Table';
 
 interface AlbumDetailViewProps {
     artistName: string;
@@ -27,7 +25,6 @@ const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ artistName, albumName
     const [album, setAlbum] = useState<AlbumDetail | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { addFavourite, removeFavourite, isFavourited } = useAlbumStore();
 
     useEffect(() => {
         const loadDetails = async () => {
@@ -73,22 +70,6 @@ const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ artistName, albumName
 
     const tracks: Track[] = album.tracks?.track || [];
 
-    function toggleFavourite(track: Track): void {
-        const trackId = `${albumName}-${track.name}-${track.artist.name}`;
-
-        if (isFavourited(trackId)) {
-            removeFavourite(trackId);
-        } else {
-            const newFavourite: FavouriteTrack = {
-                id: trackId,
-                name: track.name,
-                artist: track.artist.name,
-                duration: track.duration,
-                album: albumName,
-            };
-            addFavourite(newFavourite);
-        }
-    }
 
     return (
         <Box p={8}>
@@ -122,39 +103,8 @@ const AlbumDetailView: React.FC<AlbumDetailViewProps> = ({ artistName, albumName
 
             <Heading size="xl" mt={10} mb={4}>Track List</Heading>
 
-            <Table.Root>
-                <Table.Header>
-                    <Table.Row>
-                        <Table.ColumnHeader>Title</Table.ColumnHeader>
-                        <Table.ColumnHeader>Artist</Table.ColumnHeader>
-                        <Table.ColumnHeader>Duration</Table.ColumnHeader>
-                        <Table.ColumnHeader />
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                    {tracks.map((track) => {
-                        const trackId = `${albumName}-${track.name}-${track.artist.name}`;
-                        const isFav = isFavourited(trackId);
+            <Table tracks={tracks} albumName={albumName} />
 
-                        return (
-                            <Table.Row key={track.url}>
-                                <Table.Cell>{track.name}</Table.Cell>
-                                <Table.Cell>{track.artist.name}</Table.Cell>
-                                <Table.Cell>{formatDuration(track.duration)}</Table.Cell>
-                                <Table.Cell>
-                                    <Button
-                                        size="sm"
-                                        variant={isFav ? "solid" : "subtle"}
-                                        onClick={() => toggleFavourite(track)}
-                                    >
-                                        {isFav ? "Remove" : "Add"} Favourite
-                                    </Button>
-                                </Table.Cell>
-                            </Table.Row>
-                        )
-                    })}
-                </Table.Body>
-            </Table.Root>
         </Box>
     );
 };
